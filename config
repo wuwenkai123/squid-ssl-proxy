@@ -1,0 +1,48 @@
+# 允许所有访问
+http_access allow all
+
+http_port 3128
+
+# Squid normally listens to port 4128 for ssl bump
+http_port 4128 ssl-bump generate-host-certificates=on dynamic_cert_mem_cache_size=4MB cert=/etc/squid-cert/private.pem key=/etc/squid-cert/private.pem
+ssl_bump server-first all
+always_direct allow all
+sslcrtd_program /usr/lib/squid/security_file_certgen -s /var/lib/ssl_db -M 4MB
+sslcrtd_children 1000 startup=1 idle=1
+
+# 设置客户端空闲连接超时
+client_idle_pconn_timeout 120 seconds
+
+# 设置客户端连接的最大生存时间
+# client_lifetime 1 day
+
+# 配置连接超时
+connect_timeout 5 seconds
+
+# 设置工作线程数
+workers 2
+
+# 设置 DNS 超时
+dns_timeout 2 seconds
+dns_retransmit_interval 2 seconds
+
+# 设置文件描述符数量
+max_filedesc 65530
+
+
+# 设置代理读取超时
+read_timeout 5 seconds
+
+# 关闭日志文件轮转
+logfile_rotate 0
+
+# 禁用缓存存储日志
+cache_store_log none
+
+logformat som-combined %tl %>a %la %ui %un %>rd "%rm %ru HTTP/%rv" %>Hs %tr %<st %<tt %<pt "%{Referer}>h" "%{User-Agent}>h" %Ss:%Sh
+
+# 输出访问日志到标准输出
+access_log /var/log/squid/access.log  som-combined
+
+# 禁用缓存日志
+cache_log /dev/null
