@@ -14,6 +14,8 @@ ENV CERT_CN=squid.local \
     CERT_COUNTRY=US \
     SQUID_PROXY_PORT=3128 \
     SQUID_PROXY_SSLBUMP_PORT=4128
+
+RUN echo "start build"
 RUN apk update 
 # Add squid and other packages
 RUN apk add --no-cache \

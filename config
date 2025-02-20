@@ -62,8 +62,9 @@ cache_store_log none
 logformat som-combined %tl %>a %la %ui %un %>rd "%rm %ru HTTP/%rv" %>Hs %tr %<st %<tt %<pt "%{Referer}>h" "%{User-Agent}>h" %Ss:%Sh
 
 # 输出访问日志到标准输出
-access_log /var/log/squid/access.log  som-combined
-
+#access_log /var/log/squid/access.log  som-combined
+#access_log stdio:/proc/self/fd/1  som-combined
+access_log stdio:/dev/stdout som-combined
 # 禁用缓存日志
 cache_log /dev/null
 

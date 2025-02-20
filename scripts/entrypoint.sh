@@ -1,7 +1,7 @@
 #!/bin/sh
 # Author: Satish Gaikwad <satish@satishweb.com>
 set -e
-
+echo "start squid"
 ## Functions
 create_cert() {
 	if [ ! -f ${SQUID_CERT_DIR}/private.pem ]; then
