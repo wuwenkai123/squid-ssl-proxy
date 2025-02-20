@@ -43,6 +43,7 @@ SQUID_CACHE_DIR=/var/cache/squid/
 SQUID_LOG_DIR=/var/log/squid/
 SQUID_CONFIG_FILE=${SQUID_CONFIG_DIR}/squid.conf
 SQUID_CONFIG_SAMPLE_FILE=/templates/squid.sample.conf
+STDOUT=/dev
 
 printf "|---------------------------------------------------------------------------------------------\n";
 printf "| Preparing squid proxy server configuration\n"
@@ -73,7 +74,7 @@ rm ${TMP_FILE}
 
 # Lets set correct permissions for files used by squid
 mkdir -p ${SQUID_CONFIG_DIR} ${SQUID_CERT_DIR} ${SQUID_CACHE_DIR} ${SQUID_LOG_DIR}
-chown -Rf squid:squid ${SQUID_CONFIG_DIR} ${SQUID_CERT_DIR} ${SQUID_CACHE_DIR} ${SQUID_LOG_DIR}
+chown -Rf squid:squid ${SQUID_CONFIG_DIR} ${SQUID_CERT_DIR} ${SQUID_CACHE_DIR} ${SQUID_LOG_DIR} ${STDOUT}
 chmod 644 ${SQUID_CONFIG_DIR}/*.conf
 
 # Lets initialize the squid

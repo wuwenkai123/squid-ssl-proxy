@@ -31,8 +31,8 @@ RUN apk add --no-cache shadow && \
 # Add config file
 ADD conf/squid.sample.conf /templates/squid.sample.conf
 ADD conf/openssl.extra.cnf /etc/ssl
-
 # Add scripts and make them executable
+
 ADD scripts/entrypoint.sh /entrypoint
 RUN chmod u+x /entrypoint && \
     mkdir -p /etc/squid-cert /var/cache/squid/ /var/log/squid/ && \
