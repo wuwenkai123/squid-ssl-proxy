@@ -4,10 +4,30 @@ http_access allow all
 http_port 3128
 
 # Squid normally listens to port 4128 for ssl bump
+
+#http_port 3128：定义了 Squid 监听的端口号为 4128。此端口用于处理来自客户端的 HTTP 请求。
+#ssl-bump：启用 SSL bumping 功能，意味着 Squid 作为代理服务器时，能够拦截并解密客户端的 HTTPS 请求，检查请求内容，并根据需要重新加密后转发给目标服务器。
+#generate-host-certificates=on：开启动态生成服务器证书的功能。在 ssl-bump 过程中的 SSL 连接会被代理，Squid 会根据客户端请求的域名生成虚拟的 SSL 证书，而不是使用固定的证书。通过这个选项，Squid 可以在运行时生成多个主机的证书。
+#dynamic_cert_mem_cache_size=4MB：设置动态证书内存缓存大小为 4MB。这意味着 Squid 会在内存中缓存生成的证书，以提高性能。如果流量较大或有很多不同的证书，增加缓存大小可以避免频繁地重新生成证书。
+#cert=/etc/squid-cert/private.pem 和 key=/etc/squid-cert/private.pem：指定 Squid 使用的私钥和证书路径。它们是 Squid 用来解密和加密 HTTPS 流量的核心。在这种配置中，Squid 作为 SSL 代理时，会使用这对证书和私钥。
+
 http_port 4128 ssl-bump generate-host-certificates=on dynamic_cert_mem_cache_size=4MB cert=/etc/squid-cert/private.pem key=/etc/squid-cert/private.pem
+#ssl_bump：这是 Squid 配置 SSL 处理的关键指令之一。
+#server-first：这个配置告诉 Squid 对 SSL/TLS 连接进行“先与服务器协商”的操作，即首先从目标服务器获取 SSL 证书（使用客户端与服务器之间的原始连接）并进行验证，然后再转发数据到客户端。也就是说，Squid 会先向目标服务器发送握手请求，获取目标服务器的证书，然后再与客户端进行 SSL 握手。这种模式通常用于解密服务器返回的流量。
+#all：指示 Squid 对所有流量（不论是 HTTP 还是 HTTPS）都启用 ssl_bump 行为，即处理所有传入的 SSL/TLS 请求。
 ssl_bump server-first all
+#always_direct：这意味着所有流量都会直接访问目标服务器，而不通过其他代理。allow all 表示没有任何限制，允许所有流量直接转发到目标主机。通常，这个设置用于允许 SSL 连接直接到达目标，而不是通过缓存代理。
+#allow all：指示允许所有流量使用直接连接，不经过其他处理。
 always_direct allow all
+#sslcrtd_program：指定 Squid 用于生成和管理 SSL 证书的程序。在这里，security_file_certgen 是一个 Squid 用来生成 SSL 证书的工具。
+#/usr/lib/squid/security_file_certgen：这是 Squid 的证书生成程序路径，用于生成和管理 SSL 证书。
+#-s /var/lib/ssl_db：指定用于存储证书和相关密钥的目录。/var/lib/ssl_db 是一个目录，所有生成的 SSL 证书和密钥都会存储在这个目录中。
+#-M 4MB：指定缓存的最大大小为 4MB，即 SSL 证书和密钥的缓存区域的最大内存占用。当缓存达到此大小时，Squid 会进行清理和重新分配。
 sslcrtd_program /usr/lib/squid/security_file_certgen -s /var/lib/ssl_db -M 4MB
+#sslcrtd_children：指定 sslcrtd 进程的数量。这些进程负责证书的生成和缓存管理。
+#1000：表示 sslcrtd 进程的最大数量为 1000。这是为了高并发场景下，支持大量的 SSL 连接和证书生成。
+#startup=1：指定在启动时启动一个 sslcrtd 进程。这个配置告诉 Squid 在启动时立即启动一个 sslcrtd 子进程。
+#idle=1：表示在有空闲时会保持至少一个 sslcrtd 进程处于活动状态。这样 Squid 可以始终保持能够处理新的 SSL 连接。
 sslcrtd_children 1000 startup=1 idle=1
 
 # 设置客户端空闲连接超时
@@ -46,3 +66,4 @@ access_log /var/log/squid/access.log  som-combined
 
 # 禁用缓存日志
 cache_log /dev/null
+
