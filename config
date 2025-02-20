@@ -11,7 +11,7 @@ http_port 3128
 #dynamic_cert_mem_cache_size=4MB：设置动态证书内存缓存大小为 4MB。这意味着 Squid 会在内存中缓存生成的证书，以提高性能。如果流量较大或有很多不同的证书，增加缓存大小可以避免频繁地重新生成证书。
 #cert=/etc/squid-cert/private.pem 和 key=/etc/squid-cert/private.pem：指定 Squid 使用的私钥和证书路径。它们是 Squid 用来解密和加密 HTTPS 流量的核心。在这种配置中，Squid 作为 SSL 代理时，会使用这对证书和私钥。
 
-http_port 4128 ssl-bump generate-host-certificates=on dynamic_cert_mem_cache_size=4MB cert=/etc/squid-cert/private.pem key=/etc/squid-cert/private.pem
+#http_port 4128 ssl-bump generate-host-certificates=on dynamic_cert_mem_cache_size=4MB cert=/etc/squid-cert/private.pem key=/etc/squid-cert/private.pem
 #ssl_bump：这是 Squid 配置 SSL 处理的关键指令之一。
 #server-first：这个配置告诉 Squid 对 SSL/TLS 连接进行“先与服务器协商”的操作，即首先从目标服务器获取 SSL 证书（使用客户端与服务器之间的原始连接）并进行验证，然后再转发数据到客户端。也就是说，Squid 会先向目标服务器发送握手请求，获取目标服务器的证书，然后再与客户端进行 SSL 握手。这种模式通常用于解密服务器返回的流量。
 #all：指示 Squid 对所有流量（不论是 HTTP 还是 HTTPS）都启用 ssl_bump 行为，即处理所有传入的 SSL/TLS 请求。
@@ -63,8 +63,10 @@ logformat som-combined %tl %>a %la %ui %un %>rd "%rm %ru HTTP/%rv" %>Hs %tr %<st
 
 # 输出访问日志到标准输出
 #access_log /var/log/squid/access.log  som-combined
-#access_log stdio:/proc/self/fd/1  som-combined
-access_log stdio:/dev/stdout som-combined
+access_log stdio:/proc/self/fd/1  som-combined
+#access_log stdio:/dev/stdout som-combined
+
+
 # 禁用缓存日志
 cache_log /dev/null
 
